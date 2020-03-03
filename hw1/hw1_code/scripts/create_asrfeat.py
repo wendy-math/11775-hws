@@ -25,7 +25,7 @@ if __name__ == '__main__':
     vocab_size = len(vocab)
     fread = open(file_list, "r")
     for line in fread.readlines():
-        asr_path = "asr/" + line.replace('\n','') + ".ctm"
+        asr_path = "../asrs/" + line.replace('\n','') + ".ctm"
         fwrite = open(output_path + line.replace('\n',''),'w')
         cluster_histogram = numpy.zeros(vocab_size)
         total_occur = 0
