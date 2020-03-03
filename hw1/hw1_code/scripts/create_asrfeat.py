@@ -10,9 +10,11 @@ if __name__ == '__main__':
         print "Usage: {0} vocab_file, file_list".format(sys.argv[0])
         print "vocab_file -- path to the vocabulary file"
         print "file_list -- the list of videos"
+        print "output_path -- path to save the asr feature"
         exit(1)
 
     vocab_file = sys.argv[1]; file_list = sys.argv[2]
+    output_path = sys.argv[3]
 
     vocab = []
     fopen = open(vocab_file, 'r')
@@ -24,7 +26,7 @@ if __name__ == '__main__':
     fread = open(file_list, "r")
     for line in fread.readlines():
         asr_path = "asr/" + line.replace('\n','') + ".ctm"
-        fwrite = open('asrfeat/' + line.replace('\n',''),'w')
+        fwrite = open(output_path + line.replace('\n',''),'w')
         cluster_histogram = numpy.zeros(vocab_size)
         total_occur = 0
 
