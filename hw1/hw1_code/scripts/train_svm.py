@@ -36,34 +36,18 @@ if __name__ == '__main__':
             groundtruth_label_string += '0 '
     fopen.close()
     Y_truth = numpy.fromstring(groundtruth_label_string.strip(), dtype=int, sep=' ')
-
-    # print 'Totally we get %s labels' % (Y_truth.shape[0])  # for debugging
-
-    # create the feature matrix, in which each row represents a video
+    
     video_num = len(video_list)
     feat_mat = numpy.zeros([video_num, feat_dim])
 
 
-
     for i in xrange(video_num):
-        # BOW features of this video
-#        if os.path.exists(feat_dir + video_list[i]) == True:
         feat_vec = numpy.genfromtxt(feat_dir + video_list[i], dtype=numpy.float32, delimiter=";")
         assert(feat_vec.shape[0] == feat_dim)
-        # fill the feature vector to the matrix
         feat_mat[i,:] = feat_vec
 
-    # initialize svm
     svm = SVC(probability=True)
-
-
-    # train the svm models
     svm.fit(feat_mat, Y_truth)
-
-
-
-
-    # finally save the k-means model
     cPickle.dump(svm, open(output_file,"wb"), cPickle.HIGHEST_PROTOCOL)
 
 
