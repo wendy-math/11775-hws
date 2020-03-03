@@ -16,7 +16,7 @@ map_path=/home/ubuntu/tools/mAP
 export PATH=$opensmile_path:$speech_tools_path:$ffmpeg_path:$map_path:$PATH
 export LD_LIBRARY_PATH=$ffmpeg_path/libs:$opensmile_path/lib:$LD_LIBRARY_PATH
 
-for feat_dim_mfcc in 150; do
+for feat_dim_mfcc in 50 100 150 200; do
 echo "#####################################"
 echo "#       MED with MFCC Features      #"
 echo "#####################################"
@@ -26,15 +26,15 @@ mkdir -p mfcc_pred
 for event in P001 P002 P003; do
     echo "=========  Event $event, k = $feat_dim_mfcc  ========="
   # create training/test labeling
-#####  python2 scripts/create_label.py $event "../all_trn.lst" || exit 1;
-#####  python2 scripts/create_label.py $event "../all_val.lst" || exit 1;
+  python2 scripts/create_label.py $event "../all_trn.lst" || exit 1;
+  python2 scripts/create_label.py $event "../all_val.lst" || exit 1;
 
   # now train a svm model
-#####  python2 scripts/train_svm.py $event "train_kmeans_"$feat_dim_mfcc"/" $feat_dim_mfcc mfcc_pred/svm.$event.$feat_dim_mfcc.model || exit 1;
+  python2 scripts/train_svm.py $event "train_kmeans_"$feat_dim_mfcc"/" $feat_dim_mfcc mfcc_pred/svm.$event.$feat_dim_mfcc.model || exit 1;
 
   # apply the svm model to *ALL* the testing videos;
   # output the score of each testing video to a file ${event}_pred
-#####  python2 scripts/test_svm.py mfcc_pred/svm.$event.$feat_dim_mfcc.model "val_kmeans_"$feat_dim_mfcc"/" $feat_dim_mfcc mfcc_pred/${event}.$feat_dim_mfcc.pred || exit 1;
+  python2 scripts/test_svm.py mfcc_pred/svm.$event.$feat_dim_mfcc.model "val_kmeans_"$feat_dim_mfcc"/" $feat_dim_mfcc mfcc_pred/${event}.$feat_dim_mfcc.pred || exit 1;
 
   # compute the average precision by calling the mAP package
   ap ../${event}_val_label mfcc_pred/${event}.$feat_dim_mfcc.pred
@@ -54,11 +54,11 @@ for event in P001 P002 P003; do
 
 echo "=========  Event $event  ========="
 # now train a svm model
-#####  python2 scripts/train_svm.py $event "asrfeat/" $feat_dim_asr asr_pred/svm.$event.model || exit 1;
+  python2 scripts/train_svm.py $event "asrfeat/" $feat_dim_asr asr_pred/svm.$event.model || exit 1;
 
 # apply the svm model to *ALL* the testing videos;
 # output the score of each testing video to a file ${event}_pred
-#####  python2 scripts/test_svm.py asr_pred/svm.$event.model "asrfeat/" $feat_dim_asr asr_pred/${event}_asr.pred || exit 1;
+  python2 scripts/test_svm.py asr_pred/svm.$event.model "asrfeat/" $feat_dim_asr asr_pred/${event}_asr.pred || exit 1;
 
 # compute the average precision by calling the mAP package
 ap ../${event}_val_label asr_pred/${event}_asr.pred
