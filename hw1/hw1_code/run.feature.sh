@@ -25,32 +25,32 @@ cluster_num=150        # the number of clusters in k-means. Note that 50 is by n
 #    will see each frame totally has 39 dims.
 #    Refer to Section 2.5 of this document http://web.stanford.edu/class/cs224s/hw/openSMILE_manual.pdf for better configuration
 #    (e.g., normalization) and other feature types (e.g., PLPs )
-######cat list/train | awk '{print $1}' > list/train.video
-######cat list/val | awk '{print $1}' > list/val.video
-######cat list/train.video list/val.video list/test.video > list/all.video
-######for line in $(cat "list/all.video"); do
-######    ffmpeg -y -i $video_path/${line}.mp4 -ac 1 -f wav audio/$line.wav
-######    SMILExtract -C config/MFCC12_0_D_A.conf -I audio/$line.wav -O mfcc/$line.mfcc.csv
-######done
+cat list/train | awk '{print $1}' > list/train.video
+cat list/val | awk '{print $1}' > list/val.video
+cat list/train.video list/val.video list/test.video > list/all.video
+for line in $(cat "list/all.video"); do
+    ffmpeg -y -i $video_path/${line}.mp4 -ac 1 -f wav audio/$line.wav
+    SMILExtract -C config/MFCC12_0_D_A.conf -I audio/$line.wav -O mfcc/$line.mfcc.csv
+done
 # You may find the number of MFCC files mfcc/*.mfcc.csv is slightly less than the number of the videos. This is because some of the videos
 # don't hae the audio track. For example, HVC1221, HVC1222, HVC1261, HVC1794
 
 # In this part, we train a clustering model to cluster the MFCC vectors. In order to speed up the clustering process, we
 # select a small portion of the MFCC vectors. In the following example, we only select 20% randomly from each video.
-######echo "Pooling MFCCs (optional)"
-######python2 scripts/select_frames.py list/train.video 0.2 select.mfcc.csv || exit 1;
+echo "Pooling MFCCs (optional)"
+python2 scripts/select_frames.py list/train.video 0.2 select.mfcc.csv || exit 1;
 
 # now trains a k-means model using the sklearn package
-######echo "Training the k-means model"
-######python2 scripts/train_kmeans.py select.mfcc.csv $cluster_num kmeans.${cluster_num}.model || exit 1;
+echo "Training the k-means model"
+python2 scripts/train_kmeans.py select.mfcc.csv $cluster_num kmeans.${cluster_num}.model || exit 1;
 
 # Now that we have the k-means model, we can represent a whole video with the histogram of its MFCC vectors over the clusters.
 # Each video is represented by a single vector which has the same dimension as the number of clusters.
 echo "Creating k-means cluster vectors"
-######python2 scripts/create_kmeans.py kmeans.${cluster_num}.model $cluster_num list/all.video || exit 1;
-######mkdir -p train_kmeans_$cluster_num val_kmeans_$cluster_num
-######python2 scripts/create_kmeans.py kmeans.${cluster_num}.model $cluster_num list/train.video train_kmeans_$cluster_num/ || exit 1; # creat_kmeans
-######python2 scripts/create_kmeans.py kmeans.${cluster_num}.model $cluster_num list/val.video val_kmeans_$cluster_num/|| exit 1;
+python2 scripts/create_kmeans.py kmeans.${cluster_num}.model $cluster_num list/all.video || exit 1;
+mkdir -p train_kmeans_$cluster_num val_kmeans_$cluster_num
+python2 scripts/create_kmeans.py kmeans.${cluster_num}.model $cluster_num list/train.video train_kmeans_$cluster_num/ || exit 1; # creat_kmeans
+python2 scripts/create_kmeans.py kmeans.${cluster_num}.model $cluster_num list/val.video val_kmeans_$cluster_num/|| exit 1;
 
 
 # Now you can see that you get the bag-of-word representations under kmeans/. Each video is now represented
@@ -60,11 +60,11 @@ echo "Creating k-means cluster vectors"
 # a vector which has the same dimension as the size of the vocabulary. The elements of this vector are the number of occurrences
 # of the corresponding word. The vector is normalized to be like a probability.
 # You can of course explore other better ways, such as TF-IDF, of generating these features.
-######echo "Creating Vocab"
-######python2 scripts/create_vocab.py
+echo "Creating Vocab"
+python2 scripts/create_vocab.py
 
 echo "Creating ASR features"
-######mkdir -p asrfeat
+mkdir -p asrfeat
 python2 scripts/create_asrfeat.py ../vocab list/all.video || exit 1;
 
 
