@@ -41,8 +41,6 @@ if __name__ == '__main__':
             array = numpy.genfromtxt(mfcc_path, delimiter=";")
             pred = kmeans.predict(array)
 
-            # for each video, get the histogram of the clusters
-            # and then normalize the histogram to be a probability distribution
             for x in pred:
                 cluster_histogram[x] += 1
             for m in xrange(cluster_num):
