@@ -10,3 +10,8 @@ sh run_download_video.sh all_video.lst ./videos
 mkdir asrs
 sh run_download_asr.sh all_asr.lst ./asrs
 ```
+
+# How to run my pipeline
+/hw1_code
+sh run.feature.sh
+sh run.med.sh
