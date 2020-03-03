@@ -7,7 +7,6 @@ from sklearn.svm import LinearSVC
 import cPickle
 import sys
 import pickle
-# Performs K-means clustering and save the model to a local file
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score
@@ -42,24 +41,10 @@ if __name__ == '__main__':
             groundtruth_label_string += '0 '
     fopen.close()
     Y_truth = numpy.fromstring(groundtruth_label_string.strip(), dtype=int, sep=' ')
-
-
-#    # load validation(test) video list
-#    video_list_file = 'list/val.video'
-
-#    # load the svm model
     svm = cPickle.load(open(model_file,"rb"))
-#    # read the video list to be processed
-#    video_list = []
-#    fopen = open(video_list_file, 'r')
-#    for line in fopen.readlines():
-#        splits = line.replace('\n','').split(' ')
-#        video_list.append(splits[0])
-#    fopen.close()
 
     X = numpy.asarray([])
     for video in video_list:
-         # BOW features of this video
         feat_vec = numpy.genfromtxt(feat_dir + video, dtype=numpy.float32, delimiter=";")
         assert(feat_vec.shape[0] == feat_dim)
         if len(X) == 0:
@@ -75,8 +60,5 @@ if __name__ == '__main__':
     for i in range(len(pred)):
         fwrite.write(str(pred[i][1])+"\n")
     fwrite.close()
-
-    #ap_output=commands.getstatusoutput("ap "+event_name+" "+output_file)
-    #print model_file.split(".")[1]+" MAP: "+ap_output[1].split(": ")[1]
 
     ######## ***--------------------------------------------------------------------*** ########
