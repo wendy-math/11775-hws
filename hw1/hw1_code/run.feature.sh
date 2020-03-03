@@ -64,9 +64,9 @@ echo "Creating Vocab"
 python2 scripts/create_vocab.py
 
 echo "Creating ASR features"
-mkdir -p asrfeat
-python2 scripts/create_asrfeat.py ../vocab list/val.video || exit 1;
-
+mkdir -p asr_train_feat asr_val_feat
+python2 scripts/create_asrfeat.py ../vocab list/train.video asr_train_feat/|| exit 1;
+python2 scripts/create_asrfeat.py ../vocab list/val.video asr_val_feat/|| exit 1;
 
 
 
