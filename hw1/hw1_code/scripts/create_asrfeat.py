@@ -4,8 +4,6 @@ import os
 import cPickle
 from sklearn.cluster.k_means_ import KMeans
 import sys
-# Generate ASR-based features for videos; each video is represented by a single vector which has the same dimension
-# as the size of the vocabulary
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
@@ -16,7 +14,6 @@ if __name__ == '__main__':
 
     vocab_file = sys.argv[1]; file_list = sys.argv[2]
 
-    # read the vocabulary into memory
     vocab = []
     fopen = open(vocab_file, 'r')
     for line in fopen.readlines():
@@ -26,7 +23,6 @@ if __name__ == '__main__':
     vocab_size = len(vocab)
     fread = open(file_list, "r")
     for line in fread.readlines():
-        # not flexible because we hardcode the asr and asrfeat directories here
         asr_path = "asr/" + line.replace('\n','') + ".ctm"
         fwrite = open('asrfeat/' + line.replace('\n',''),'w')
         cluster_histogram = numpy.zeros(vocab_size)
@@ -46,9 +42,6 @@ if __name__ == '__main__':
             # normalize the histogram to be a probability distribution
             for m in xrange(vocab_size):
                 cluster_histogram[m] /= float(total_occur)
-        else:
-            cluster_histogram.fill(1.0/vocab_size) # for videos that have no ASR features, we simply set all the values to be
-                                                   # 1.0/vocab_size
 
         line = str(cluster_histogram[0])
         for m in range(1, vocab_size):
