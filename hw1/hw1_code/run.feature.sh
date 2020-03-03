@@ -65,7 +65,7 @@ python2 scripts/create_vocab.py
 
 echo "Creating ASR features"
 mkdir -p asrfeat
-python2 scripts/create_asrfeat.py ../vocab list/all.video || exit 1;
+python2 scripts/create_asrfeat.py ../vocab list/val.video || exit 1;
 
 
 
